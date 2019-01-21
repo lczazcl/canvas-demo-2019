@@ -4,7 +4,7 @@ var context = yyy.getContext('2d')
 autoSetCanvasSize(yyy)
 
 /*************************/
-listenToMouse(yyy)
+listenToUser(yyy)
 
 /************************************/
 var eraserEnabled = false
@@ -52,7 +52,7 @@ function drawLine(x1, y1, x2, y2) {
   context.closePath()
 }
 
-function listenToMouse(canvas) {
+function listenToUser(canvas) {
   var using = false //是否为橡皮状态
 
   var lastPoint = {
@@ -60,41 +60,87 @@ function listenToMouse(canvas) {
     y: undefined
   }
 
-  canvas.onmousedown = function (ev) {
-    var x = ev.clientX
-    var y = ev.clientY
-    using = true
-    if (eraserEnabled) {
-      context.clearRect(x - 5, y - 5, 10, 10)
-    } else {
-      // 鼠标按下时记录最后一个点
-      lastPoint = {
-        'x': x,
-        'y': y
+  // 特性检测
+  if (document.body.ontouchstart !== undefined) {
+    // 触屏设备
+    canvas.ontouchstart = function (ev) {
+      var x = ev.touches[0].clientX
+      var y = ev.touches[0].clientY
+      console.log(x, y)
+      using = true
+      if (eraserEnabled) {
+        context.clearRect(x - 5, y - 5, 10, 10)
+      } else {
+        // 鼠标按下时记录最后一个点
+        lastPoint = {
+          'x': x,
+          'y': y
+        }
       }
     }
-  }
 
-  canvas.onmousemove = function (ev) {
-    var x = ev.clientX
-    var y = ev.clientY
+    canvas.ontouchmove = function (ev) {
+      console.log('表示大苏打')
+      var x = ev.touches[0].clientX
+      var y = ev.touches[0].clientY
 
-    if (!using) { return }
+      if (!using) { return }
 
-    if (eraserEnabled) {
-      context.clearRect(x - 5, y - 5, 10, 10)
-    } else {
-      var newPoint = {
-        'x': x,
-        'y': y
+      if (eraserEnabled) {
+        context.clearRect(x - 5, y - 5, 10, 10)
+      } else {
+        var newPoint = {
+          'x': x,
+          'y': y
+        }
+        drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
+        // 鼠标移动之后最新的点为一开始记录的点
+        lastPoint = newPoint
       }
-      drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
-      // 鼠标移动之后最新的点为一开始记录的点
-      lastPoint = newPoint
     }
-  }
 
-  canvas.onmouseup = function (ev) {
-    using = false
+    canvas.ontouchend = function () {
+      console.log('摸完了')
+      using = false
+    }
+  } else {
+    // 非触屏设备
+    canvas.onmousedown = function (ev) {
+      var x = ev.clientX
+      var y = ev.clientY
+      using = true
+      if (eraserEnabled) {
+        context.clearRect(x - 5, y - 5, 10, 10)
+      } else {
+        // 鼠标按下时记录最后一个点
+        lastPoint = {
+          'x': x,
+          'y': y
+        }
+      }
+    }
+
+    canvas.onmousemove = function (ev) {
+      var x = ev.clientX
+      var y = ev.clientY
+
+      if (!using) { return }
+
+      if (eraserEnabled) {
+        context.clearRect(x - 5, y - 5, 10, 10)
+      } else {
+        var newPoint = {
+          'x': x,
+          'y': y
+        }
+        drawLine(lastPoint.x, lastPoint.y, newPoint.x, newPoint.y)
+        // 鼠标移动之后最新的点为一开始记录的点
+        lastPoint = newPoint
+      }
+    }
+
+    canvas.onmouseup = function (ev) {
+      using = false
+    }
   }
 }
