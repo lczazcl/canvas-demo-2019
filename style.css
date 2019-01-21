@@ -6,6 +6,9 @@
 ul,ol {
   list-style: none;
 }
+body {
+  overflow: hidden;
+}
 
 .icon {
   width: 1em; height: 1em;
@@ -63,6 +66,9 @@ ul,ol {
   margin:10px 0;
   transition: all .3s;
 }
+.colors > li.black {
+  background:#000;
+}
 .colors > li.red {
   background:red;
 }
@@ -75,4 +81,26 @@ ul,ol {
 .colors > li.active {
   box-shadow: 0 0 3px rgba(0,0,0,.95);
   transform: scale(1.2);
+}
+
+.sizes {
+  position: fixed;
+  right:20px;
+  top:10px;
+}
+
+.sizes li {
+  margin:10px 0;
+}
+
+.sizes > .thin {
+  width:20px;
+  height:0;
+  border-top:3px solid #000;
+}
+
+.sizes > .thick {
+  width:20px;
+  height:0;
+  border-top:6px solid #000;
 }
